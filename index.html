@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Internship Tracker 2026</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .controls {
+            padding: 20px 30px;
+            background: white;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        input, select, button {
+            padding: 10px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .table-container {
+            padding: 30px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 10px;
+            text-align: left;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .status {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .status-applied { background: #cfe2ff; color: #084298; }
+        .status-oa { background: #fff3cd; color: #664d03; }
+        .status-interview { background: #d1e7dd; color: #0f5132; }
+        .status-offer { background: #d1ecf1; color: #055160; }
+        .status-rejected { background: #f8d7da; color: #842029; }
+        .status-ghosted { background: #e2e3e5; color: #41464b; }
+
+        .priority-high { color: #dc3545; font-weight: bold; }
+        .priority-medium { color: #fd7e14; font-weight: bold; }
+        .priority-low { color: #6c757d; }
+
+        .location-international { color: #0d6efd; font-weight: 600; }
+        .location-mexico { color: #198754; font-weight: 600; }
+        .location-remote { color: #6f42c1; font-weight: 600; }
+
+        .actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .btn-small {
+            padding: 5px 10px;
+            font-size: 0.85em;
+            background: #6c757d;
+        }
+
+        .btn-delete {
+            background: #dc3545;
+        }
+
+        .filters {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .filter-btn {
+            padding: 8px 15px;
+            background: white;
+            border: 2px solid #667eea;
+            color: #667eea;
+            font-size: 0.9em;
+        }
+
+        .filter-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .export-section {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            table {
+                font-size: 0.85em;
+            }
+            
+            th, td {
+                padding: 8px 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Internship Application Tracker</h1>
+            <p>Summer 2026 | Adrián Cortés Jiménez</p>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalApps">0</div>
+                <div class="stat-label">Total Aplicaciones</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="pending">0</div>
+                <div class="stat-label">Pendientes</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="interviews">0</div>
+                <div class="stat-label">Entrevistas</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="offers">0</div>
+                <div class="stat-label">Ofertas</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="responseRate">0%</div>
+                <div class="stat-label">Tasa de Respuesta</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <h3 style="margin-bottom: 15px;">➕ Agregar Nueva Aplicación</h3>
+            <div class="form-row">
+                <input type="text" id="company" placeholder="Empresa *" required>
+                <input type="text" id="position" placeholder="Posición *" required>
+                <select id="location">
+                    <option value="Internacional">🌎 Internacional</option>
+                    <option value="México">🇲🇽 México</option>
+                    <option value="Remoto">💻 Remoto</option>
+                </select>
+                <select id="type">
+                    <option value="Big Tech">Big Tech</option>
+                    <option value="Startup">Startup</option>
+                    <option value="Enterprise">Enterprise</option>
+                    <option value="Unicornio">Unicornio</option>
+                    <option value="Scaleup">Scaleup</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <input type="date" id="dateApplied">
+                <select id="status">
+                    <option value="Applied">Aplicado</option>
+                    <option value="OA">Online Assessment</option>
+                    <option value="Interview">Entrevista</option>
+                    <option value="Offer">Oferta</option>
+                    <option value="Rejected">Rechazado</option>
+                    <option value="Ghosted">Ghosted</option>
+                </select>
+                <select id="priority">
+                    <option value="Alta">🔴 Alta</option>
+                    <option value="Media">🟡 Media</option>
+                    <option value="Baja">⚪ Baja</option>
+                </select>
+                <input type="url" id="jobUrl" placeholder="URL del trabajo">
+            </div>
+            <div class="form-row">
+                <input type="text" id="notes" placeholder="Notas / Contacto / Referral">
+                <button onclick="addApplication()">Agregar Aplicación</button>
+            </div>
+
+            <div class="filters">
+                <button class="filter-btn active" onclick="filterTable('all')">Todas</button>
+                <button class="filter-btn" onclick="filterTable('Internacional')">Internacional</button>
+                <button class="filter-btn" onclick="filterTable('México')">México</button>
+                <button class="filter-btn" onclick="filterTable('Remoto')">Remoto</button>
+                <button class="filter-btn" onclick="filterTable('Big Tech')">Big Tech</button>
+                <button class="filter-btn" onclick="filterTable('Startup')">Startups</button>
+            </div>
+
+            <div class="export-section">
+                <button onclick="exportToCSV()">📥 Exportar a CSV</button>
+                <button onclick="exportToJSON()" class="btn-secondary">📄 Exportar a JSON</button>
+                <button onclick="clearAll()" class="btn-delete">🗑️ Limpiar Todo</button>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table id="applicationsTable">
+                <thead>
+                    <tr>
+                        <th>Empresa</th>
+                        <th>Posición</th>
+                        <th>Ubicación</th>
+                        <th>Tipo</th>
+                        <th>Fecha</th>
+                        <th>Estado</th>
+                        <th>Prioridad</th>
+                        <th>Notas</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- Data will be inserted here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        let applications = [];
+        let currentFilter = 'all';
+
+        // Load data from memory on startup
+        function loadData() {
+            const saved = localStorage.getItem('internshipApplications');
+            if (saved) {
+                applications = JSON.parse(saved);
+                renderTable();
+                updateStats();
+            }
+        }
+
+        // Save data to memory
+        function saveData() {
+            localStorage.setItem('internshipApplications', JSON.stringify(applications));
+        }
+
+        function addApplication() {
+            const company = document.getElementById('company').value;
+            const position = document.getElementById('position').value;
+            
+            if (!company || !position) {
+                alert('Por favor completa al menos Empresa y Posición');
+                return;
+            }
+
+            const app = {
+                id: Date.now(),
+                company: company,
+                position: position,
+                location: document.getElementById('location').value,
+                type: document.getElementById('type').value,
+                dateApplied: document.getElementById('dateApplied').value || new Date().toISOString().split('T')[0],
+                status: document.getElementById('status').value,
+                priority: document.getElementById('priority').value,
+                jobUrl: document.getElementById('jobUrl').value,
+                notes: document.getElementById('notes').value
+            };
+
+            applications.push(app);
+            saveData();
+            renderTable();
+            updateStats();
+            clearForm();
+        }
+
+        function deleteApplication(id) {
+            if (confirm('¿Seguro que quieres eliminar esta aplicación?')) {
+                applications = applications.filter(app => app.id !== id);
+                saveData();
+                renderTable();
+                updateStats();
+            }
+        }
+
+        function updateStatus(id, newStatus) {
+            const app = applications.find(a => a.id === id);
+            if (app) {
+                app.status = newStatus;
+                saveData();
+                renderTable();
+                updateStats();
+            }
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+
+            let filtered = applications;
+            if (currentFilter !== 'all') {
+                filtered = applications.filter(app => 
+                    app.location === currentFilter || app.type === currentFilter
+                );
+            }
+
+            filtered.sort((a, b) => new Date(b.dateApplied) - new Date(a.dateApplied));
+
+            filtered.forEach(app => {
+                const row = document.createElement('tr');
+                
+                const locationClass = 
+                    app.location === 'Internacional' ? 'location-international' :
+                    app.location === 'México' ? 'location-mexico' : 'location-remote';
+                
+                const priorityClass =
+                    app.priority === 'Alta' ? 'priority-high' :
+                    app.priority === 'Media' ? 'priority-medium' : 'priority-low';
+
+                const companyCell = app.jobUrl ? 
+                    `<a href="${app.jobUrl}" target="_blank" style="color: #667eea; text-decoration: none; font-weight: 600;">${app.company}</a>` :
+                    `<strong>${app.company}</strong>`;
+
+                row.innerHTML = `
+                    <td>${companyCell}</td>
+                    <td>${app.position}</td>
+                    <td class="${locationClass}">${app.location}</td>
+                    <td>${app.type}</td>
+                    <td>${app.dateApplied}</td>
+                    <td>
+                        <select onchange="updateStatus(${app.id}, this.value)" class="status status-${app.status.toLowerCase()}">
+                            <option value="Applied" ${app.status === 'Applied' ? 'selected' : ''}>Aplicado</option>
+                            <option value="OA" ${app.status === 'OA' ? 'selected' : ''}>OA</option>
+                            <option value="Interview" ${app.status === 'Interview' ? 'selected' : ''}>Entrevista</option>
+                            <option value="Offer" ${app.status === 'Offer' ? 'selected' : ''}>Oferta</option>
+                            <option value="Rejected" ${app.status === 'Rejected' ? 'selected' : ''}>Rechazado</option>
+                            <option value="Ghosted" ${app.status === 'Ghosted' ? 'selected' : ''}>Ghosted</option>
+                        </select>
+                    </td>
+                    <td class="${priorityClass}">${app.priority}</td>
+                    <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis;">${app.notes || '-'}</td>
+                    <td class="actions">
+                        <button class="btn-small btn-delete" onclick="deleteApplication(${app.id})">🗑️</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function updateStats() {
+            const total = applications.length;
+            const pending = applications.filter(a => a.status === 'Applied' || a.status === 'OA').length;
+            const interviews = applications.filter(a => a.status === 'Interview').length;
+            const offers = applications.filter(a => a.status === 'Offer').length;
+            const responded = applications.filter(a => a.status !== 'Applied' && a.status !== 'Ghosted').length;
+            const responseRate = total > 0 ? Math.round((responded / total) * 100) : 0;
+
+            document.getElementById('totalApps').textContent = total;
+            document.getElementById('pending').textContent = pending;
+            document.getElementById('interviews').textContent = interviews;
+            document.getElementById('offers').textContent = offers;
+            document.getElementById('responseRate').textContent = responseRate + '%';
+        }
+
+        function filterTable(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            renderTable();
+        }
+
+        function clearForm() {
+            document.getElementById('company').value = '';
+            document.getElementById('position').value = '';
+            document.getElementById('dateApplied').value = '';
+            document.getElementById('jobUrl').value = '';
+            document.getElementById('notes').value = '';
+        }
+
+        function exportToCSV() {
+            let csv = 'Empresa,Posición,Ubicación,Tipo,Fecha,Estado,Prioridad,URL,Notas\n';
+            applications.forEach(app => {
+                csv += `"${app.company}","${app.position}","${app.location}","${app.type}","${app.dateApplied}","${app.status}","${app.priority}","${app.jobUrl}","${app.notes}"\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'internship_applications_2026.csv';
+            a.click();
+        }
+
+        function exportToJSON() {
+            const json = JSON.stringify(applications, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'internship_applications_2026.json';
+            a.click();
+        }
+
+        function clearAll() {
+            if (confirm('¿SEGURO que quieres eliminar TODAS las aplicaciones? Esta acción no se puede deshacer.')) {
+                applications = [];
+                saveData();
+                renderTable();
+                updateStats();
+            }
+        }
+
+        // Initialize
+        loadData();
+    </script>
+</body>
+</html>
